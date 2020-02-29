@@ -16,7 +16,7 @@ let csvParser = require("../utility/csv-parser");
 
 exports.classWiseTimetable = generateClassWiseTimetable;
 
-function generateClassWiseTimetable(cb) {
+function generateClassWiseTimetable(type, cb) {
   //these are classes in csv files
   initClasWiseTimeTable([6, 7, 8, 9, 10]).then(resp => {
     Promise.all([
@@ -26,7 +26,7 @@ function generateClassWiseTimetable(cb) {
       csvParser.parser(maths),
       csvParser.parser(science)
     ]).then(values => {
-      updateClassRoutine(values).then(result => {
+      updateClassRoutine(type, values).then(result => {
         cb(result);
       });
     });
@@ -63,7 +63,7 @@ function initClasWiseTimeTable(classArray) {
   });
 }
 
-function updateClassRoutine(values) {
+function updateClassRoutine(type, values) {
   return new Promise(resolve => {
     for (let v = 0; v < values.length; v++) {
       for (let r = 1; r < 10; r++) {
@@ -88,9 +88,13 @@ function updateClassRoutine(values) {
           }
 
           if (v == values.length - 1 && r == 9 && c == 6) {
-            storingRoutineINCsv(classWiseTimeTable).then(files => {
-              resolve(files);
-            });
+            if (type == "array") {
+              resolve(classWiseTimeTable);
+            } else {
+              storingRoutineINCsv(classWiseTimeTable).then(files => {
+                resolve(files);
+              });
+            }
           }
         }
       }
@@ -110,15 +114,14 @@ function storingRoutineINCsv(classWiseTimeTable) {
       fs.unlink(classRoutineFilepath, err => {
         routine_file.push(classRoutineFilepath);
         for (let j = 0; j < 10; j++) {
-          fs.appendFile(
+          fs.appendFileSync(
             classRoutineFilepath,
-            classWiseTimeTable[i][j] + "\n",
-            err => {
-              if (i == classWiseTimeTable.length - 1 && j == 9) {
-                resolve(routine_file);
-              }
-            }
+            classWiseTimeTable[i][j] + "\n"
           );
+
+          if (i == classWiseTimeTable.length - 1 && j == 9) {
+            resolve(routine_file);
+          }
         }
       });
     }
