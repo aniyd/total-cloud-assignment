@@ -4,7 +4,7 @@ let file_dir = __dirname + "/../files";
 let file_path_prefix = file_dir + "/Teacher wise class timetable";
 let english = file_path_prefix + " - English.csv";
 let hindi = file_path_prefix + " - Hindi.csv";
-let kannnada = file_path_prefix + " - Kannada.csv";
+let kannada = file_path_prefix + " - Kannada.csv";
 let maths = file_path_prefix + " - Maths.csv";
 let science = file_path_prefix + " - Science.csv";
 
@@ -22,7 +22,7 @@ function generateClassWiseTimetable(type, cb) {
     Promise.all([
       csvParser.parser(english),
       csvParser.parser(hindi),
-      csvParser.parser(kannnada),
+      csvParser.parser(kannada),
       csvParser.parser(maths),
       csvParser.parser(science)
     ]).then(values => {
